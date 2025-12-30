@@ -1,0 +1,25 @@
+.common-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.sidebar {
+  width: 80px;
+  background: #1f2937;
+}
+
+.main-content {
+  background-image: url("../background.jpg");
+  background-size: cover;
+  height: 100vh;
+  width: calc(100vw - 80px);
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}

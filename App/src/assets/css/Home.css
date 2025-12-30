@@ -1,0 +1,113 @@
+.dashboard-container {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.me-background {
+  background-image: url("@/assets/background.jpg");
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  width: 100%;
+
+  overflow-x: hidden;
+}
+
+.me-header-overlay {
+  background-color: rgba(255, 255, 255, 0.75);
+  padding: 20px 30px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.me-avatar {
+  border: 2px solid white;
+}
+
+.scroll-area {
+  height: 400px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.invite-item {
+  padding: 10px 0;
+}
+
+.invite-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.invite-info {
+  flex: 1;
+}
+
+.invite-date {
+  font-size: 12px;
+  color: gray;
+}
+
+.invite-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+@media (max-width: 768px) {
+  .me-background {
+    padding: 16px;
+  }
+
+  .me-header-overlay {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.avatar-wrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.avatar-uploader {
+  display: inline-block;
+  position: relative;
+}
+
+.upload-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 12px;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.upload-overlay el-icon {
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+.me-avatar {
+  border: 2px solid white;
+  transition: transform 0.2s;
+}
+
+.avatar-wrapper:hover .me-avatar {
+  transform: scale(1.05);
+}

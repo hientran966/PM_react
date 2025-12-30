@@ -1,0 +1,33 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "Tran Minh Hien",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@octokit/request": "^10.0.6",
+    "axios": "^1.13.1",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dayjs": "^1.11.19",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.14.1",
+    "node-cron": "^4.2.1",
+    "node-fetch": "^2.7.0",
+    "socket.io": "^4.8.1"
+  },
+  "devDependencies": {
+    "eslint": "^9.21.0",
+    "eslint-config-prettier": "^10.0.1",
+    "nodemon": "^3.1.9",
+    "prettier": "^3.5.2"
+  }
+}

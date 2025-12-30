@@ -1,0 +1,44 @@
+.avatar-group {
+    display: flex;
+  align-items: center;
+  border: 2px solid #fff;
+  margin-left: -8px;
+  transition: transform 0.2s ease;
+  cursor: pointer;
+}
+
+.avatar-group {
+  margin-left: 0;
+}
+
+.avatar-group {
+  transform: scale(1.1);
+  z-index: 100;
+}
+
+.extra-avatar {
+  background-color: #dcdfe6;
+  color: #606266;
+  font-weight: bold;
+}
+
+.user-tooltip-popper {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.user-tooltip-popper {
+  filter: none !important;
+}
+
+.user-tooltip-popper .ant-tooltip-inner {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.user-tooltip-popper .ant-tooltip-arrow {
+  display: none !important;
+}
