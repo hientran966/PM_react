@@ -106,7 +106,7 @@ export default function EditProfileModal({ open, onClose, user, onSaved }) {
         open={open}
         onCancel={() => onClose(false)}
         footer={null}
-        destroyOnClose
+        destroyOnHidden
       >
         {/* Avatar */}
         <div style={{ textAlign: "center", marginBottom: 16 }}>
@@ -157,7 +157,7 @@ export default function EditProfileModal({ open, onClose, user, onSaved }) {
         open={passwordOpen}
         onCancel={() => setPasswordOpen(false)}
         footer={null}
-        destroyOnClose
+        destroyOnHidden
       >
         <Form layout="vertical" onFinish={submitPassword}>
           <Form.Item

@@ -10,19 +10,19 @@ router.route("/")
     .post(upload.single("file"), file.create)
 
 router.route("/:id")
-    .get(checkFileViewer, file.findOne)
-    .put(checkFileViewer, file.update)
-    .delete(checkFileViewer, file.delete);
+    .get(file.findOne)
+    .put(file.update)
+    .delete(file.delete);
 
 router.route("/:id/version")
-    .get(checkFileViewer, file.findAllVersion)
-    .post(checkFileViewer, upload.single("file"), file.addVersion);
+    .get(file.findAllVersion)
+    .post(upload.single("file"), file.addVersion);
 
 router.route("/:id/role/:user_id")
-    .get(checkFileViewer, file.getRole);
+    .get(file.getRole);
 
 router.route("/:id/version/:versionId")
-    .get(checkFileViewer, file.findVersion)
+    .get(file.findVersion)
 
 router.route("/avatar/:id")
     .get(file.getAvatar)

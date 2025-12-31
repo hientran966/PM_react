@@ -3,6 +3,7 @@ import App from "../App";
 
 import Home from "../pages/Home";
 import ProjectsView from "../pages/ProjectsView";
+import TaskLayout from "../pages/TaskLayout";
 //import NotFound from "../pages/NotFound";
 
 /* =========================
@@ -34,6 +35,11 @@ export const router = createBrowserRouter([
       {
         path: "projects",
         element: <ProjectsView />,
+      }, 
+
+      {
+        path: "projects/:id",
+        element: <TaskLayout />,
       },
 
       {

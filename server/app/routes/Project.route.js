@@ -9,17 +9,17 @@ router.route("/")
   .post(project.create);
 
 router.route("/:id")
-  .get(checkProjectMember, project.findOne)
-  .put(checkProjectMember, project.update);
+  .get(project.findOne)
+  .put(project.update);
 
 router.route("/:id/:actor_id")
-  .delete(checkProjectMember, project.delete);
+  .delete(project.delete);
 
 router.route("/:id/report")
-  .get(checkProjectMember, project.report);
+  .get(project.report);
 
 router.route("/:id/role/:user_id")
-  .get(checkProjectMember, project.getRole);
+  .get(project.getRole);
 
 router.route("/account/:id")
   .get(project.findByAccountId);
