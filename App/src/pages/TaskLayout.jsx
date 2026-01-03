@@ -1,15 +1,34 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { message } from "antd";
 
 import { getSocket } from "@/plugins/socket";
 
-import TaskService from "@/services/Task.service";
+/* ===== stores ===== */
+import {
+  loadTasks,
+  updateStatus,
+} from "@/stores/taskSlice";
+import { selectFilteredTasksByProject } from "@/stores/taskSelectors";
+
+import {
+  fetchProjects,
+} from "@/stores/projectSlice";
+import { selectProjectById } from "@/stores/projectSelectors";
+
+import {
+  loadChannelByUser,
+  deleteChannel,
+  getChannelMembers,
+} from "@/stores/chatSlice";
+
+/* ===== services ===== */
 import MemberService from "@/services/Member.service";
-import ChatService from "@/services/Chat.service";
 import ProjectService from "@/services/Project.service";
 
-/* components */
+/* ===== components ===== */
 import TaskMenu from "@/components/TaskMenu";
 import Header from "@/components/Header";
 import TaskKanban from "@/components/TaskKanban";
@@ -20,7 +39,7 @@ import GitHubIntegration from "@/components/GitHubIntegration";
 import FileList from "@/components/FileList";
 import Chat from "@/components/Chat";
 
-/* modals */
+/* ===== modals ===== */
 import EditProject from "@/components/EditProject";
 import TaskForm from "@/components/TaskForm";
 import ChannelForm from "@/components/ChannelForm";
@@ -34,17 +53,24 @@ export default function TaskLayout() {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
 
   const projectId = Number(id);
-  const user = JSON.parse(localStorage.getItem("user") || "{id: 1}");
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
   const userId = user?.id;
 
-  /* ================= STATE ================= */
+  /* ================= REDUX ================= */
+  const project = useSelector((s) =>
+    selectProjectById(s, projectId)
+  );
+
+  const tasks = useSelector((s) =>
+    selectFilteredTasksByProject(s, projectId)
+  );
+
+  /* ================= LOCAL STATE ================= */
   const [activeView, setActiveView] = useState("kanban");
   const [selectedChannel, setSelectedChannel] = useState(null);
-
-  const [project, setProject] = useState([]);
-  const [tasks, setTasks] = useState([]);
   const [members, setMembers] = useState([]);
 
   const [projectOpen, setProjectOpen] = useState(false);
@@ -61,69 +87,34 @@ export default function TaskLayout() {
   const [isExpanded, setIsExpanded] = useState(true);
 
   /* ================= LOADERS ================= */
-  const loadProject = async () => {
-    try {
-      const data = await ProjectService.getProjectById(projectId);
-      setProject(data ? data : {});
-    } catch (err) {
-      console.error("Load project error", err);
-    }
-  };
-
-  const loadTasks = async () => {
-    try {
-      const data = await TaskService.getByProject(projectId);
-      setTasks(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Load task error", err);
-    }
-  };
 
   const loadMembers = async () => {
-    try {
-      if (activeView === "chat" && selectedChannel) {
-        const res = await ChatService.getChannelMembers(selectedChannel);
-        setMembers(Array.isArray(res) ? res : []);
-        return;
-      }
-
-      const res = await MemberService.getByProjectId(projectId);
-      setMembers(Array.isArray(res) ? res : []);
-    } catch (err) {
-      console.error("Load member error", err);
+    if (activeView === "chat" && selectedChannel) {
+      dispatch(getChannelMembers(selectedChannel))
+        .unwrap()
+        .then(res => setMembers(res.members || []));
+      return;
     }
+
+    const res = await MemberService.getByProjectId(projectId);
+    setMembers(Array.isArray(res) ? res : []);
   };
 
-  const loadChannels = async () => {
-    try {
-      await ChatService.getChannelsByUser(projectId, userId);
-    } catch (err) {
-      console.error("Load channel error", err);
-    }
-  };
-
-  /* ================= EFFECT: PROJECT ================= */
+  /* ================= EFFECT: INIT ================= */
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadProject();
-  }, [projectId]);
-
-  /* ================= EFFECT: TASKS ================= */
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadTasks();
+    dispatch(fetchProjects());
+    dispatch(loadTasks(projectId));
   }, [projectId]);
 
   /* ================= EFFECT: MEMBERS ================= */
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadMembers();
   }, [projectId, activeView, selectedChannel]);
 
-  /* ================= EFFECT: CHANNELS ================= */
+  /* ================= EFFECT: CHAT ================= */
   useEffect(() => {
     if (activeView === "chat") {
-      loadChannels();
+      dispatch(loadChannelByUser({ projectId, userId }));
     }
   }, [activeView, projectId]);
 
@@ -133,8 +124,8 @@ export default function TaskLayout() {
     if (!socket) return;
 
     const refresh = async () => {
-      await loadTasks();
-      await loadMembers();
+      dispatch(loadTasks(projectId));
+      loadMembers();
     };
 
     socket.on("project_accepted", refresh);
@@ -146,7 +137,7 @@ export default function TaskLayout() {
     };
   }, [projectId, activeView, selectedChannel]);
 
-  /* ================= EFFECT: QUERY PARAM ================= */
+  /* ================= EFFECT: QUERY ================= */
   useEffect(() => {
     const params = new URLSearchParams(location.search);
 
@@ -154,7 +145,6 @@ export default function TaskLayout() {
     if (taskId) {
       const task = tasks.find(t => t.id === Number(taskId));
       if (task) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedTask(task);
         setDetailVisible(true);
       }
@@ -164,18 +154,15 @@ export default function TaskLayout() {
 
     const channelId = params.get("channel");
     if (channelId) {
-      (async () => {
-        const channel = await ChatService.getChannelById(channelId);
-        setActiveView("chat");
-        setSelectedChannel(channel);
-      })();
-
+      setActiveView("chat");
+      setSelectedChannel(Number(channelId));
       params.delete("channel");
       navigate({ search: params.toString() }, { replace: true });
     }
   }, [location.search, tasks]);
 
   /* ================= ACTIONS ================= */
+
   const onDeleteProject = async () => {
     try {
       await ProjectService.deleteProject(projectId, userId);
@@ -188,7 +175,7 @@ export default function TaskLayout() {
 
   const onDeleteChannel = async (channelId) => {
     try {
-      await ChatService.deleteChannel(channelId);
+      await dispatch(deleteChannel(channelId));
       setSelectedChannel(null);
       setActiveView("kanban");
       message.success("Xóa kênh thành công");
@@ -198,6 +185,7 @@ export default function TaskLayout() {
   };
 
   /* ================= RENDER ================= */
+
   return (
     <div className="task-layout">
       <TaskMenu
@@ -239,83 +227,32 @@ export default function TaskLayout() {
             <TaskKanban
               tasks={tasks}
               projectId={projectId}
-              onOpenDetail={(task) => {
-                setSelectedTask(task);
-                setDetailVisible(true);
-              }}
-              onUpdateTask={loadTasks}
+              onOpenDetail={setSelectedTask}
+              onUpdateTask={(t) =>
+                dispatch(updateStatus({ projectId, task: t }))
+              }
             />
           )}
 
-          {activeView === "timeline" && (
-            <Timeline projectId={projectId} tasks={tasks} />
-          )}
-
-          {activeView === "gantt" && (
-            <TaskGantt projectId={projectId} tasks={tasks} />
-          )}
-
+          {activeView === "timeline" && <Timeline projectId={projectId} tasks={tasks} />}
+          {activeView === "gantt" && <TaskGantt projectId={projectId} tasks={tasks} />}
           {activeView === "report" && <Report projectId={projectId} />}
-
           {activeView === "github" && <GitHubIntegration />}
-
           {activeView === "file-all" && <FileList projectId={projectId} />}
-
-          {activeView === "file-user" && (
-            <FileList projectId={projectId} userId={userId} />
-          )}
-
+          {activeView === "file-user" && <FileList projectId={projectId} userId={userId} />}
           {activeView === "chat" && selectedChannel && (
-            <Chat
-              projectId={projectId}
-              channelId={selectedChannel}
-              currentUserId={userId}
-            />
+            <Chat projectId={projectId} channelId={selectedChannel} currentUserId={userId} />
           )}
         </div>
       </div>
 
-      {/* ================= MODALS ================= */}
-      <EditProject
-        open={projectOpen}
-        projectId={projectId}
-        onClose={setProjectOpen}
-      />
-
-      <TaskForm
-        open={taskOpen}
-        projectId={projectId}
-        onClose={setTaskOpen}
-        onAdded={loadTasks}
-      />
-
-      <ChannelForm
-        open={addChannel}
-        projectId={projectId}
-        onClose={setAddChannel}
-      />
-
-      <ChannelForm
-        open={editChannel}
-        projectId={projectId}
-        channelId={selectedChannel}
-        onClose={setEditChannel}
-      />
-
-      <ChannelMemberList
-        open={channelMemberOpen}
-        projectId={projectId}
-        channelId={selectedChannel}
-        onClose={setChannelMemberOpen}
-        onUpdated={loadMembers}
-      />
-
-      <MemberList
-        open={memberListOpen}
-        projectId={projectId}
-        onClose={setMemberListOpen}
-        onUpdated={loadMembers}
-      />
+      {/* ===== MODALS ===== */}
+      <EditProject open={projectOpen} projectId={projectId} onClose={setProjectOpen} />
+      <TaskForm open={taskOpen} projectId={projectId} onClose={setTaskOpen} />
+      <ChannelForm open={addChannel} projectId={projectId} onClose={setAddChannel} />
+      <ChannelForm open={editChannel} projectId={projectId} channelId={selectedChannel} onClose={setEditChannel} />
+      <ChannelMemberList open={channelMemberOpen} projectId={projectId} channelId={selectedChannel} onClose={setChannelMemberOpen} />
+      <MemberList open={memberListOpen} projectId={projectId} onClose={setMemberListOpen} />
 
       {selectedTask && (
         <TaskDetail
