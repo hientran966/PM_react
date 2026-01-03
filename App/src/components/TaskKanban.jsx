@@ -166,7 +166,12 @@ export default function KanbanBoard({ projectId, tasks = [], onOpenDetail }) {
                     <Progress percent={task.latest_progress} size="small" />
                   )}
 
-                  <AvatarGroup userIds={task.assignees || []} max={3} />
+                  {task.assignees && (
+                    <AvatarGroup
+                      userIds={task.assignees}
+                      projectId={projectId}
+                    />
+                  )}
                 </div>
 
                 {task.latest_activity && (

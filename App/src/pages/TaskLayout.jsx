@@ -227,7 +227,10 @@ export default function TaskLayout() {
             <TaskKanban
               tasks={tasks}
               projectId={projectId}
-              onOpenDetail={setSelectedTask}
+              onOpenDetail={(task) => {
+                setSelectedTask(task);
+                setDetailVisible(true);
+              }}
               onUpdateTask={(t) =>
                 dispatch(updateStatus({ projectId, task: t }))
               }
@@ -259,7 +262,10 @@ export default function TaskLayout() {
           open={detailVisible}
           taskId={selectedTask.id}
           projectId={projectId}
-          onClose={setDetailVisible}
+          onClose={() => {
+            setDetailVisible(false);
+            setSelectedTask(null);
+          }}
         />
       )}
     </div>

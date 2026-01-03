@@ -2,7 +2,6 @@
   width: 1400px;
   display: flex;
   gap: 16px;
-  padding: 16px;
   overflow-x: auto;
 }
 
@@ -17,7 +16,7 @@
 }
 
 .kanban-column {
-  height: 70vh;
+  height: 75vh;
   width: 250px;
   flex: 1;
   padding: 8px;

@@ -1,11 +1,11 @@
 import { useMemo, useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Button,
   Input,
   Divider,
   Drawer,
   Select,
-  Tooltip,
   Dropdown,
   Modal,
 } from "antd";
@@ -22,10 +22,15 @@ import {
 
 import AvatarGroup from "@/components/AvatarGroup";
 
-//import { useProjectStore } from "@/stores/projectStore";
-//import { useTaskStore } from "@/stores/taskStore";
-//import { useChatStore } from "@/stores/chatStore";
-//import { useRoleStore } from "@/stores/roleStore";
+import {
+  setSearch as setProjectSearch,
+} from "@/stores/projectSlice";
+
+import {
+  setSearch as setTaskSearch,
+  setPriorityFilter,
+  setAssigneeFilter,
+} from "@/stores/taskSlice";
 
 import "@/assets/css/Header.css";
 
@@ -46,37 +51,29 @@ export default function Header({
   onMemberClick,
   onToggleMenu,
 }) {
-  /* =====================
-     STORE
-  ===================== */
-  //const projectStore = useProjectStore();
-  //const taskStore = useTaskStore();
-  //const chatStore = useChatStore();
-  //const roleStore = useRoleStore();
+  const dispatch = useDispatch();
 
   /* =====================
      STATE
   ===================== */
-  const [search, setSearch] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
-
   const [filters, setFilters] = useState({
-    priority: "",
+    priority: null,
     assignees: null,
   });
 
   /* =====================
      TITLE
   ===================== */
-  const projectName = useMemo(() => {
-    if (!project) return "";
-    return project.name || "";
-  }, [project]);
+  const projectName = useMemo(
+    () => project?.name || "",
+    [project]
+  );
 
-  const channelName = useMemo(() => {
-    if (!channel) return "";
-    return channel.name || "";
-  }, [channel]);
+  const channelName = useMemo(
+    () => channel?.name || "",
+    [channel]
+  );
 
   const pageTitle = useMemo(() => {
     if (view === "chat" && channelName) return channelName;
@@ -99,18 +96,6 @@ export default function Header({
       ),
     [members]
   );
-
-  /* =====================
-     ROLE CHECK
-  ===================== */
-
-  /* =====================
-     SEARCH
-  ===================== */
-
-  /* =====================
-     FILTER
-  ===================== */
 
   /* =====================
      DELETE CONFIRM
@@ -136,7 +121,7 @@ export default function Header({
   };
 
   /* =====================
-     MENU
+     DROPDOWN MENU
   ===================== */
   const dropdownItems =
     view === "chat"
@@ -207,8 +192,11 @@ export default function Header({
             <Input
               placeholder="Tìm kiếm..."
               prefix={<SearchOutlined />}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (page === "project") dispatch(setProjectSearch(value));
+                if (view === "kanban") dispatch(setTaskSearch(value));
+              }}
               style={{ width: 180, marginRight: 8 }}
               allowClear
             />
@@ -244,13 +232,14 @@ export default function Header({
         title="Bộ lọc công việc"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
-        size={300}
       >
         <div style={{ marginBottom: 12 }}>
           <label>Ưu tiên</label>
           <Select
             value={filters.priority}
-            onChange={(v) => setFilters({ ...filters, priority: v })}
+            onChange={(v) =>
+              setFilters((prev) => ({ ...prev, priority: v }))
+            }
             allowClear
             style={{ width: "100%" }}
           >
@@ -264,7 +253,9 @@ export default function Header({
           <label>Người phụ trách</label>
           <Select
             value={filters.assignees}
-            onChange={(v) => setFilters({ ...filters, assignees: v })}
+            onChange={(v) =>
+              setFilters((prev) => ({ ...prev, assignees: v }))
+            }
             allowClear
             style={{ width: "100%" }}
           >
@@ -277,8 +268,25 @@ export default function Header({
         </div>
 
         <div style={{ marginTop: 16, textAlign: "right" }}>
-          <Button onClick={[]}>Đặt lại</Button> 
-          <Button type="primary" onClick={[]} style={{ marginLeft: 8 }}>
+          <Button
+            onClick={() => {
+              setFilters({ priority: null, assignees: null });
+              dispatch(setPriorityFilter(null));
+              dispatch(setAssigneeFilter(null));
+            }}
+          >
+            Đặt lại
+          </Button>
+
+          <Button
+            type="primary"
+            style={{ marginLeft: 8 }}
+            onClick={() => {
+              dispatch(setPriorityFilter(filters.priority));
+              dispatch(setAssigneeFilter(filters.assignees));
+              setDrawerOpen(false);
+            }}
+          >
             Áp dụng
           </Button>
         </div>

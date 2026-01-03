@@ -2,11 +2,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Avatar, Popover } from "antd";
 
 import FileService from "@/services/File.service";
-
 import UserTooltip from "@/components/UserTooltip";
 
-import '@/assets/css/AvatarGroup.css'
 import defaultAvatar from "@/assets/default-avatar.png";
+import "@/assets/css/AvatarGroup.css";
 
 export default function AvatarGroup({
   userIds = [],
@@ -14,14 +13,14 @@ export default function AvatarGroup({
   projectId,
   size = 28,
   max = 3,
-  tooltips = true
+  tooltips = true,
 }) {
   const [avatarsMap, setAvatarsMap] = useState({});
   const namesMapRef = useRef(userNameMap);
 
   /* ================= Load avatars ================= */
   useEffect(() => {
-    if (!userIds?.length) return;
+    if (!userIds.length) return;
 
     const uniqueIds = [...new Set(userIds)];
     let cancelled = false;
@@ -56,52 +55,52 @@ export default function AvatarGroup({
 
   const getAvatar = (id) => avatarsMap[id] || defaultAvatar;
 
-  /* ================= Visible & extra ================= */
+  /* ================= Visible ================= */
   const visibleIds = useMemo(
     () => userIds.slice(0, max),
     [userIds, max]
   );
 
-  const extraCount = Math.max(0, userIds.length - visibleIds.length);
-
   /* ================= Render ================= */
   return (
-    <div className="avatar-group">
-      {visibleIds.map((userId, index) => {
-        const avatarNode = (
+    <Avatar.Group
+      max={{
+        count: max,
+        style: {
+          backgroundColor: "#f0f0f0",
+          color: "#555",
+          cursor: "default",
+        },
+      }}
+    >
+      {visibleIds.map((userId) => {
+        const avatar = (
           <Avatar
             key={userId}
             src={getAvatar(userId)}
             size={size}
-            style={{ zIndex: visibleIds.length - index }}
           />
         );
 
-        if (!tooltips) return avatarNode;
+        if (!tooltips) return avatar;
 
         return (
-            <Popover
+          <Popover
+            key={userId}
             placement="top"
-            overlayClassName="user-tooltip-popper"
             mouseEnterDelay={0}
             mouseLeaveDelay={0}
             content={
-                <UserTooltip
+              <UserTooltip
                 userId={userId}
                 projectId={projectId}
-                />
+              />
             }
-            >
-                {avatarNode}
-            </Popover>
+          >
+            {avatar}
+          </Popover>
         );
       })}
-
-      {extraCount > 0 && (
-        <Avatar size={size} className="extra-avatar">
-          +{extraCount}
-        </Avatar>
-      )}
-    </div>
+    </Avatar.Group>
   );
 }
