@@ -25,6 +25,8 @@ import { loadComments, addComment } from "@/stores/commentSlice";
 import { selectCommentsByTask } from "@/stores/commentSelectors";
 import { selectProjectById } from "@/stores/projectSelectors";
 
+import "@/assets/css/TaskDetail.css";
+
 export default function TaskDetailModal({
   open,
   onClose,
