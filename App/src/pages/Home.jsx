@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import {
@@ -12,14 +13,19 @@ import {
   Upload,
   Empty,
   message,
-  Divider
+  Divider,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 
+import { fetchProjects } from "@/stores/projectSlice";
+import {
+  fetchInvites,
+  acceptInvite,
+  declineInvite,
+} from "@/stores/inviteSlice";
+
 import AccountService from "@/services/Account.service";
 import FileService from "@/services/File.service";
-import ProjectService from "@/services/Project.service";
-import MemberService from "@/services/Member.service";
 
 import ProfileModal from "@/components/ProfileModal";
 import defaultAvatar from "@/assets/default-avatar.png";
@@ -28,17 +34,19 @@ import "@/assets/css/Home.css";
 const PAGE_SIZE = 7;
 
 export default function MeDashboard() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  /* ================== STATE ================== */
+  /* ================== STORE ================== */
+  const { projects, loading } = useSelector((state) => state.project);
+  const invites = useSelector((state) => state.invite.invites);
+
+  /* ================== LOCAL UI STATE ================== */
   const [user, setUser] = useState({});
   const [avatar, setAvatar] = useState("");
   const [hovering, setHovering] = useState(false);
   const [editVisible, setEditVisible] = useState(false);
   const [userLoaded, setUserLoaded] = useState(false);
-
-  const [projects, setProjects] = useState([]);
-  const [invites, setInvites] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
 
   /* ================== UTILS ================== */
@@ -47,7 +55,7 @@ export default function MeDashboard() {
 
   /* ================== PROJECTS ================== */
   const ongoingProjects = useMemo(
-    () => projects.filter(p => p.status === "Đang tiến hành"),
+    () => projects.filter((p) => p.status === "Đang tiến hành"),
     [projects]
   );
 
@@ -59,15 +67,25 @@ export default function MeDashboard() {
   /* ================== TABLE ================== */
   const columns = [
     { title: "Tên dự án", dataIndex: "name" },
-    { title: "Bắt đầu", dataIndex: "start_date", render: formatDate, width: 120 },
-    { title: "Kết thúc", dataIndex: "end_date", render: formatDate, width: 120 }
+    {
+      title: "Bắt đầu",
+      dataIndex: "start_date",
+      render: formatDate,
+      width: 120,
+    },
+    {
+      title: "Kết thúc",
+      dataIndex: "end_date",
+      render: formatDate,
+      width: 120,
+    },
   ];
 
   /* ================== AVATAR UPLOAD ================== */
   const beforeUpload = (file) => {
     if (!file.type.startsWith("image/")) {
       message.error("Chỉ được chọn file ảnh!");
-      return false;
+      return Upload.LIST_IGNORE;
     }
     return true;
   };
@@ -88,25 +106,26 @@ export default function MeDashboard() {
     }
   };
 
-  /* ================== INVITES ================== */
-  const acceptInvite = async (id, userId) => {
-    await MemberService.acceptInvite(id, userId);
-    loadData();
+  /* ================== INVITE ACTIONS ================== */
+  const handleAcceptInvite = (id) => {
+    dispatch(acceptInvite(id))
+      .unwrap()
+      .then(() => message.success("Đã chấp nhận lời mời"));
   };
 
-  const rejectInvite = async (id, userId) => {
-    await MemberService.declineInvite(id, userId);
-    loadData();
+  const handleRejectInvite = (id) => {
+    dispatch(declineInvite(id))
+      .unwrap()
+      .then(() => message.info("Đã từ chối lời mời"));
   };
 
   /* ================== LOAD DATA ================== */
-  const loadData = async () => {
+  const loadUser = async () => {
     try {
-      //const userData = await AccountService.getCurrentUser();
-      const userData = {id:1};
+      const userData = await AccountService.getCurrentUser();
       setUser(userData);
 
-      if (userData.id) {
+      if (userData?.id) {
         try {
           const avatarData = await FileService.getAvatar(userData.id);
           setAvatar(avatarData?.file_url || "");
@@ -114,13 +133,8 @@ export default function MeDashboard() {
           setAvatar("");
         }
 
-        const [projectRes, inviteRes] = await Promise.all([
-          ProjectService.getProjectsByAccountId(userData.id),
-          MemberService.getInviteList(userData.id)
-        ]);
-
-        setProjects(projectRes || []);
-        setInvites(inviteRes || []);
+        dispatch(fetchProjects());
+        dispatch(fetchInvites());
       }
 
       setUserLoaded(true);
@@ -130,12 +144,13 @@ export default function MeDashboard() {
   };
 
   useEffect(() => {
-    loadData();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadUser();
   }, []);
 
   /* ================== CALLBACK ================== */
   const handleUserSaved = async () => {
-    await loadData();
+    await loadUser();
     message.success("Thông tin người dùng đã được cập nhật!");
   };
 
@@ -143,7 +158,6 @@ export default function MeDashboard() {
   return (
     <div className="me-background">
       <div className="dashboard-container">
-
         {/* HEADER */}
         <div className="me-header-overlay">
           <div
@@ -188,12 +202,13 @@ export default function MeDashboard() {
             <Card title="Projects hiện tại" hoverable>
               <Table
                 rowKey="id"
+                loading={loading}
                 columns={columns}
                 dataSource={paginatedProjects}
                 pagination={false}
                 scroll={{ y: 341 }}
                 onRow={(record) => ({
-                  onClick: () => navigate(`/tasks/${record.id}`)
+                  onClick: () => navigate(`/tasks/${record.id}`),
                 })}
               />
 
@@ -213,10 +228,10 @@ export default function MeDashboard() {
               {!invites.length ? (
                 <Empty description="Không có lời mời nào" />
               ) : (
-                invites.map(item => (
+                invites.map((item) => (
                   <div key={item.id} className="invite-item">
                     <div className="invite-header">
-                      <Avatar src={item.inviterAvatar} />
+                      <Avatar src={item.inviterAvatar || defaultAvatar} />
                       <div>
                         <strong>{item.invited_by_name}</strong> mời bạn tham gia
                         <strong> {item.project_name}</strong>
@@ -230,14 +245,14 @@ export default function MeDashboard() {
                       <Button
                         size="small"
                         type="primary"
-                        onClick={() => acceptInvite(item.id, 1)}
+                        onClick={() => handleAcceptInvite(item.id)}
                       >
                         Chấp nhận
                       </Button>
                       <Button
                         size="small"
                         danger
-                        onClick={() => rejectInvite(item.id, 1)}
+                        onClick={() => handleRejectInvite(item.id)}
                       >
                         Từ chối
                       </Button>

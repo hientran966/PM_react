@@ -6,7 +6,7 @@ import ProjectService from "@/services/Project.service";
 import MemberService from "@/services/Member.service";
 import AvatarGroup from "@/components/AvatarGroup";
 
-const PAGE_SIZE = 13;
+const PAGE_SIZE = 7;
 
 function ProjectTable({ projects }) {
   const navigate = useNavigate();
