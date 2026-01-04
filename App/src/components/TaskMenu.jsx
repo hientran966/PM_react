@@ -69,7 +69,7 @@ export default function ProjectMenu({
         label: "Gantt",
       },
       {
-        key: "timeline",
+        key: "calendar",
         icon: <CalendarOutlined />,
         label: "Lịch",
       },

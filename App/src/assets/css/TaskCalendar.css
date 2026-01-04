@@ -1,0 +1,47 @@
+.calendar-container {
+  margin: 20px;
+}
+
+.calendar-cell {
+  min-height: 70px;
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  border-radius: 6px;
+  padding: 2px 6px;
+  font-size: 12px;
+  margin-top: 3px;
+}
+
+.task-title {
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.task-progress {
+  margin-left: 4px;
+  font-weight: bold;
+}
+
+.more-tasks {
+  color: #1677ff;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.more-tasks:hover {
+  text-decoration: underline;
+}
+
+.ant-picker-calendar-date-content {
+  height: 90px !important;
+  overflow: hidden;
+}

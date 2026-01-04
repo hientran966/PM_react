@@ -32,7 +32,7 @@ import ProjectService from "@/services/Project.service";
 import TaskMenu from "@/components/TaskMenu";
 import Header from "@/components/Header";
 import TaskKanban from "@/components/TaskKanban";
-import Timeline from "@/components/Timeline";
+import TaskCalendar from "@/components/TaskCalendar";
 import TaskGantt from "@/components/TaskGantt";
 import Report from "@/components/Report";
 import GitHubIntegration from "@/components/GitHubIntegration";
@@ -237,7 +237,7 @@ export default function TaskLayout() {
             />
           )}
 
-          {activeView === "timeline" && <Timeline projectId={projectId} tasks={tasks} />}
+          {activeView === "calendar" && <TaskCalendar projectId={projectId} tasks={tasks} />}
           {activeView === "gantt" && <TaskGantt projectId={projectId} tasks={tasks} />}
           {activeView === "report" && <Report projectId={projectId} />}
           {activeView === "github" && <GitHubIntegration />}
