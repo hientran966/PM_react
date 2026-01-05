@@ -1,0 +1,84 @@
+.github-integration {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 auto;
+  gap: 20px;
+  height: calc(100vh - 100px);
+  padding: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.section-box {
+  height: 100%;
+  background: #fff;
+  border: 1px solid #ebeef5;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.repo-section {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  margin-top: 10px;
+}
+
+.table-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.table-block .el-table,
+.table-block .el-empty {
+  height: 180px;
+}
+
+.empty-box {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-permission {
+  text-align: center;
+}
+
+.install-info {
+  background: #f6f8fa;
+  border: 1px solid #ebeef5;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+.not-connected {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 240px;
+  color: #606266;
+  text-align: center;
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.not-connected p {
+  font-size: 15px;
+  margin-bottom: 16px;
+  color: #303133;
+}
+
+.not-connected .el-button {
+  font-weight: 500;
+  margin: 5px;
+}
+.button-col {
+  flex-direction: row;
+}

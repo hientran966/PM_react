@@ -144,7 +144,7 @@ export default function TaskCalendar({ projectId, tasks = [] }) {
         <Calendar
           value={value}
           onChange={setValue}
-          dateCellRender={dateCellRender}
+          cellRender={dateCellRender}
           onSelect={showTasksOfDay}
         />
       </Card>
