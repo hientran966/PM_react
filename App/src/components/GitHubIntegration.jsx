@@ -254,7 +254,7 @@ export default function GitHubIntegration() {
         footer={null}
         width="80%"
         onCancel={() => setExplorerVisible(false)}
-        destroyOnClose
+        destroyOnHidden
       >
         {activeRepo && installation && (
           <RepoExplorer

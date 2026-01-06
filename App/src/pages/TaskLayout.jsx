@@ -42,7 +42,7 @@ import Chat from "@/components/Chat";
 /* ===== modals ===== */
 import EditProject from "@/components/EditProject";
 import TaskForm from "@/components/TaskForm";
-import ChannelForm from "@/components/ChannelForm";
+import ChannelModal from "@/components/ChannelModal";
 import ChannelMemberList from "@/components/ChannelMemberList";
 import MemberList from "@/components/MemberList";
 import TaskDetail from "@/components/TaskDetail";
@@ -252,8 +252,8 @@ export default function TaskLayout() {
       {/* ===== MODALS ===== */}
       <EditProject open={projectOpen} projectId={projectId} onClose={setProjectOpen} />
       <TaskForm open={taskOpen} projectId={projectId} onClose={setTaskOpen} />
-      <ChannelForm open={addChannel} projectId={projectId} onClose={setAddChannel} />
-      <ChannelForm open={editChannel} projectId={projectId} channelId={selectedChannel} onClose={setEditChannel} />
+      <ChannelModal open={addChannel} projectId={projectId} onClose={setAddChannel} />
+      <ChannelModal open={editChannel} projectId={projectId} channelId={selectedChannel} onClose={setEditChannel} />
       <ChannelMemberList open={channelMemberOpen} projectId={projectId} channelId={selectedChannel} onClose={setChannelMemberOpen} />
       <MemberList open={memberListOpen} projectId={projectId} onClose={setMemberListOpen} />
 

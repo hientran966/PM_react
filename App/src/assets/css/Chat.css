@@ -1,0 +1,152 @@
+.chat-view {
+    padding: -16px;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 200px);
+  border: 1px solid #eee;
+  border-radius: 10px;
+  background: #fff;
+}
+
+.message-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.avatar-col {
+  flex: 0 0 40px;
+}
+
+.content-col {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 520px) {
+  .message-row {
+    gap: 6px;
+  }
+  .avatar-col {
+    flex: 0 0 32px;
+  }
+  .sender-name {
+    font-size: 14px;
+  }
+}
+
+:deep(.el-scrollbar__wrap),
+:deep(.el-scrollbar__view) {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden !important;
+}
+
+.message-item {
+  padding: 20px;
+  border-bottom: 1px solid #f0f0f0;
+  box-sizing: border-box;
+  transition: background-color 0.6s ease;
+}
+
+.message-item.highlight {
+  background: #d1edff;
+  border-radius: 8px;
+}
+
+.avatar-col {
+  display: flex;
+  justify-content: center;
+}
+
+.message-header {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.sender-name {
+  font-weight: 600;
+  color: #333;
+}
+
+.time {
+  font-size: 13px;
+  color: #999;
+}
+
+.message-body {
+  margin-top: 6px;
+  line-height: 1.6;
+  color: #444;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+}
+
+.attachments {
+  margin-top: 10px;
+}
+
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.chat-input {
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #ddd;
+  padding: 10px 14px;
+  background: #fafafa;
+  gap: 10px;
+}
+
+.message-input {
+  flex: 1;
+}
+
+.mention {
+  color: #409eff;
+  font-weight: 500;
+}
+
+.content-col {
+  padding-left: 10px;
+}
+
+.file-preview-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 8px 14px;
+  border-top: 1px solid #eee;
+  background: #f9f9f9;
+}
+
+.file-preview-item {
+  background: #eef3ff;
+  padding: 6px 10px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.remove-icon {
+  cursor: pointer;
+  color: #999;
+}
+
+.remove-icon:hover {
+  color: #f56c6c;
+}

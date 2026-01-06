@@ -1,4 +1,5 @@
 .kanban-container {
+  padding: 16px;
   width: 1400px;
   display: flex;
   gap: 16px;

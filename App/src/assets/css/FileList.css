@@ -1,0 +1,21 @@
+.file-list-view {
+  padding: 16px 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  height: calc(100vh - 132px);
+  overflow-y: auto;
+}
+
+.file-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.no-file {
+  margin-top: 24px;
+  color: #888;
+  text-align: center;
+}

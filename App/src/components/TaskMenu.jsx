@@ -128,10 +128,9 @@ export default function ProjectMenu({
 
     if (key.startsWith("chat-")) {
       const id = Number(key.replace("chat-", ""));
-      const channel = channels.find(c => c.id === id);
-
       onUpdateView?.("chat");
-      onSelectChannel?.(channel);
+      onSelectChannel?.(id);
+      return;
     }
 
     onUpdateView?.(key);
